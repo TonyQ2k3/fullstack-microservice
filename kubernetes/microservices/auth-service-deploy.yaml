@@ -1,0 +1,48 @@
+# AUTH_MICROSERVICE
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-microservice-svc
+spec:
+  selector:
+    app: auth-microservice
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 8003
+      targetPort: 8003
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-microservice-deployment
+  labels:
+    app: auth-microservice
+spec:
+  selector:
+    matchLabels:
+      app: auth-microservice
+  template:
+    metadata:
+      labels:
+        app: auth-microservice
+    spec:
+      containers:
+      - name: auth-microservice-c
+        image: tonyq2k3/auth-microservice:dev
+        env:
+          - name: PORT
+            value: "8003"
+          - name: MONGO_URI
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: authdb_uri
+        resources:
+          limits:
+            memory: 128Mi
+            cpu: "0.25"
+        ports:
+        - containerPort: 8003

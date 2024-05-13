@@ -1,0 +1,14 @@
+# Enable metric server
+minikube addons enable metrics-server
+
+# Install prometheus
+helm install prometheus prometheus-community/prometheus
+kubectl expose service prometheus-server --type=NodePort --target-port=9090 --name=prometheus-server-np
+
+# Install Grafana
+helm install grafana grafana/grafana
+kubectl expose service grafana --type=NodePort --target-port=3000 --name=grafana-np
+
+# Get Grafana password
+kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" 
+<Decode using Base64>

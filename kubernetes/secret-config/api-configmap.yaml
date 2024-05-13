@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-configmap
+  labels:
+    app: fullstack-microservices
+data:
+  gateway_url: "http://gateway-svc:8000"
+  post_service_url: "http://post-microservice-svc:8001"
+  comment_service_url: "http://comment-microservice-svc:8002"
+  auth_service_url: "http://auth-microservice-svc:8003"

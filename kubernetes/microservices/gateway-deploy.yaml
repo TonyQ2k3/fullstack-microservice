@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-svc
+spec:
+  selector:
+    app: gateway
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-deployment
+  labels:
+    app: gateway
+spec:
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - name: gateway-c
+        image: tonyq2k3/gateway-service:dev
+        env:
+          - name: PORT
+            value: "8000"
+          - name: POST_SERVICE
+            valueFrom:
+              configMapKeyRef:
+                name: api-configmap
+                key: post_service_url
+          - name: COMMENT_SERVICE
+            valueFrom:
+              configMapKeyRef:
+                name: api-configmap
+                key: comment_service_url
+          - name: AUTH_SERVICE
+            valueFrom:
+              configMapKeyRef:
+                name: api-configmap
+                key: auth_service_url
+        resources:
+          limits:
+            cpu: "0.25"
+            memory: 128Mi
+        ports:
+        - containerPort: 8000

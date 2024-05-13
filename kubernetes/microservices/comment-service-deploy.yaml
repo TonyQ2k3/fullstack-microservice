@@ -1,0 +1,48 @@
+# COMMENT_MICROSERVICE
+apiVersion: v1
+kind: Service
+metadata:
+  name: comment-microservice-svc
+spec:
+  selector:
+    app: comment-microservice
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 8002
+      targetPort: 8002
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comment-microservice-deployment
+  labels:
+    app: comment-microservice
+spec:
+  selector:
+    matchLabels:
+      app: comment-microservice
+  template:
+    metadata:
+      labels:
+        app: comment-microservice
+    spec:
+      containers:
+      - name: comment-microservice-c
+        image: tonyq2k3/comment-microservice:dev
+        env:
+          - name: PORT
+            value: "8002"
+          - name: MONGO_URI
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: commentdb_uri
+        resources:
+          limits:
+            memory: 128Mi
+            cpu: "0.25"
+        ports:
+        - containerPort: 8002

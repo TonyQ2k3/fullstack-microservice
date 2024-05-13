@@ -1,0 +1,162 @@
+# Post Database
+apiVersion: v1
+kind: Service
+metadata:
+  name: postdb-svc
+spec:
+  selector:
+    app: postdb
+  ports:
+  - port: 27017
+    targetPort: 27017
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postdb
+spec:
+  selector:
+    matchLabels:
+      app: postdb
+  template:
+    metadata:
+      labels:
+        app: postdb
+    spec:
+      volumes: 
+      - name: postdb-data
+        persistentVolumeClaim:
+          claimName: postdb-pvc
+      containers:
+      - name: postdb
+        image: mongo:latest
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "0.2"
+        ports:
+        - containerPort: 27017
+        env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: username
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: password
+        volumeMounts:
+        - name: postdb-data
+          mountPath: /data/postdb
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: commentdb-svc
+spec:
+  selector:
+    app: commentdb
+  ports:
+  - port: 27018
+    targetPort: 27017
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: commentdb
+spec:
+  selector:
+    matchLabels:
+      app: commentdb
+  template:
+    metadata:
+      labels:
+        app: commentdb
+    spec:
+      volumes: 
+      - name: commentdb-data
+        persistentVolumeClaim:
+          claimName: commentdb-pvc
+      containers:
+      - name: commentdb
+        image: mongo:latest
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "0.2"
+        env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: username
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: password
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: commentdb-data
+          mountPath: /data/commentdb
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: authdb-svc
+spec:
+  selector:
+    app: authdb
+  ports:
+  - port: 27019
+    targetPort: 27017
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authdb
+spec:
+  selector:
+    matchLabels:
+      app: authdb
+  template:
+    metadata:
+      labels:
+        app: authdb
+    spec:
+      volumes: 
+      - name: authdb-data
+        persistentVolumeClaim:
+          claimName: authdb-pvc
+      containers:
+      - name: authdb
+        image: mongo:latest
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "0.2"
+        env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: username
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: password
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: authdb-data
+          mountPath: /data/authdb

@@ -1,0 +1,49 @@
+# POST_MICROSERVICE
+apiVersion: v1
+kind: Service
+metadata:
+  name: post-microservice-svc
+spec:
+  selector:
+    app: post-microservice
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 8001
+      targetPort: 8001
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: post-microservice-deployment
+  labels:
+    app: post-microservice
+spec:
+  selector:
+    matchLabels:
+      app: post-microservice
+  template:
+    metadata:
+      labels:
+        app: post-microservice
+    spec:
+      containers:
+      - name: post-microservice-c
+        image: tonyq2k3/post-microservice:dev
+        env:
+          - name: PORT
+            value: "8001"
+          - name: MONGO_URI
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: postdb_uri
+        resources:
+          limits:
+            memory: 128Mi
+            cpu: "0.25"
+        ports:
+        - containerPort: 8001
+
