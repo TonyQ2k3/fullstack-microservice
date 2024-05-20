@@ -47,7 +47,7 @@ The order of deployment is as follows:
 4. Microservices & API gateway
 5. Front-end
 
-##### Checking the app
+#### Checking the app
 If you use Minikube, you must expose the front-end's LoadBalancer service to access it.
 ```
 minikube service frontend-svc
@@ -55,5 +55,6 @@ minikube service frontend-svc
 If you use EKS, simply access the LoadBalancer's external IP provided by Amazon.
 
 ## 📺 Monitor system
-To setup Prometheus and Grafan, simply use the commands provided in [monitor-cmd.txt](./monitor-cmd.txt).
+To setup Prometheus and Grafana, simply use the commands provided in [monitor-cmd.txt](./monitor-cmd.txt).
+
 ***Note***: The installation commands require [Helm](https://helm.sh/), make sure you install it first.
